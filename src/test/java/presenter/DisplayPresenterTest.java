@@ -1,14 +1,11 @@
 package presenter;
 
-import it.unimi.di.sweng.esame.model.CodiceIstituto;
-import it.unimi.di.sweng.esame.model.ModelObservable;
-import it.unimi.di.sweng.esame.model.Supplenze;
+import it.unimi.di.sweng.esame.Observable;
+import it.unimi.di.sweng.esame.model.*;
 import it.unimi.di.sweng.esame.presenter.DisplayPresenter;
-import it.unimi.di.sweng.esame.presenter.StrategyOrdinamentoAndPrint;
-import it.unimi.di.sweng.esame.views.OutputView;
+import it.unimi.di.sweng.esame.view.OutputView;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,20 +15,19 @@ public class DisplayPresenterTest {
 
     @Test
     void testUpdateView(){
+        Model model = mock(Model.class);
         OutputView outputView = mock(OutputView.class);
-        ModelObservable model = mock(ModelObservable.class);
-        StrategyOrdinamentoAndPrint strategy = mock(StrategyOrdinamentoAndPrint.class);
-        DisplayPresenter SUT = new DisplayPresenter(model,strategy ,outputView);
+        DisplayPresenter SUT = new DisplayPresenter(outputView,model);
+
+        Libro l1 = new Libro(new CodiceLibro("A202"),"Follia", Money.parse("15.60"), StatoLibro.ASNEW);
+        Libro l2 = new Libro(new CodiceLibro("A312"),"Follia", Money.parse("15.60"), StatoLibro.ASNEW);
+        List<Libro> libri = new ArrayList<>(
+        );
+        libri.add(l1);
+        libri.add(l2);
+
+        when(model.getState()).thenReturn(libri);
         SUT.update(model);
-
-        List<Supplenze> supplenze = new ArrayList<>();
-        supplenze.add(new Supplenze(new CodiceIstituto("PP002"),4,"LO", LocalDate.now()));
-
-        when(model.getState()).thenReturn(supplenze);
-        when(strategy.formatPrint(model.getState().get(0))).thenReturn("PP002");
-        verify(outputView,times(8)).set(anyInt(),anyString());
-
+        verify(outputView,times(5)).set(anyInt(),anyString());
     }
-
-
 }
